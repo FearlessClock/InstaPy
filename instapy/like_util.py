@@ -119,7 +119,7 @@ def get_links_for_location(browser, location, amount, media=None):
     return links[:amount]
 
 
-def get_links_for_tag(browser, tag, amount, media=None):
+def get_links_for_tag(browser, tag, amount, byClass=True, media=None):
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
@@ -156,7 +156,11 @@ def get_links_for_tag(browser, tag, amount, media=None):
     sleep(1)
 
     # Get links
-    main_elem = browser.find_element_by_tag_name('main')
+    if(byClass):
+        main_elem = browser.find_elements_by_class_name('_cmdpi')
+        main_elem = main_elem[1]
+    else:
+        main_elem = browser.find_element_by_tag_name('main')
     link_elems = main_elem.find_elements_by_tag_name('a')
     total_links = len(link_elems)
     links = []
