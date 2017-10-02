@@ -587,7 +587,7 @@ class InstaPy:
 
                 continue
 
-            if self.do_follow and username not in self.dont_include \
+            if links != False and self.do_follow and username not in self.dont_include \
                     and following \
                     and self.follow_restrict.get(username, 0) < self.follow_times:
                 followed += follow_user(self.browser, self.follow_restrict, self.username, username)

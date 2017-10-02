@@ -26,6 +26,18 @@ sleep(3600)
 session.like_by_tags(['entrepreneursofinstagram'], amount=randrange(30, 70))
 sleep(3600)
 
+#strategy 2: Follower liking
+session.set_user_interact(amount=10, random=True, percentage=100, media='Photo')
+session.set_do_like(enabled=True, percentage=100)
+session.set_do_follow(enabled=True, percentage=100)
+session.interact_user_followers(['ginlane'], amount=randrange(10, 40), random=True)
+sleep(3600)
+session.interact_user_followers(['ryanserhant'], amount=randrange(10, 40), random=True)
+sleep(3600)
+session.interact_user_followers(['Fueled'], amount=randrange(10, 40), random=True)
+sleep(3600)
+session.interact_user_followers(['garyvee'], amount=randrange(10, 40), random=True)
+sleep(3600)
 
 # end the bot session
 session.end()
