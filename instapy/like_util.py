@@ -254,7 +254,15 @@ def get_links_for_username(browser, username, amount, is_random=False, media=Non
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
-        load_button.click()
+        try:
+            load_button.click()
+        except:
+            print('The Load button was hidden, move the screen to try and free it')
+            body_elem.send_keys(Keys.HOME)
+            sleep(2)
+            body_elem.send_keys(Keys.END)
+            load_button.click()
+
 
     body_elem.send_keys(Keys.HOME)
     sleep(2)
