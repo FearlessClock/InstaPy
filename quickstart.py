@@ -7,7 +7,7 @@ insta_password = '12345Azerty'
 
 # if you want to run this script on a server, 
 # simply add nogui=True to the InstaPy() constructor
-session = InstaPy(username=insta_username, password=insta_password)
+session = InstaPy(username=insta_username, password=insta_password, use_firefox=True)
 session.login()
 
 # set up all the setting
