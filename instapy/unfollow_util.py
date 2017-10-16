@@ -405,7 +405,7 @@ def get_given_user_followers(browser,
         dialog = browser.find_element_by_xpath("//div[text()='Followers']/following-sibling::div")
     except:
         print("Followers XPath didn't work")
-        return person_followed
+        return []
     # scroll down the page
     scroll_bottom(browser, dialog, allfollowing)
 
