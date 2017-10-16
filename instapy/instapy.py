@@ -148,9 +148,15 @@ class InstaPy:
         if self.aborting:
             return self
 
-        self.browser = webdriver.Remote(command_executor=selenium_url,
-                                        desired_capabilities=DesiredCapabilities.CHROME)
-        self.browser.maximize_window()
+        if self.use_firefox:
+            self.browser = webdriver.Remote(
+                command_executor=selenium_url,
+                desired_capabilities=DesiredCapabilities.FIREFOX)
+        else:
+            self.browser = webdriver.Remote(
+                command_executor=selenium_url,
+                desired_capabilities=DesiredCapabilities.CHROME)
+
         self.logFile.write('Session started - %s\n' \
                            % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
@@ -231,6 +237,12 @@ class InstaPy:
          words is in the description, the image won't be liked"""
         if self.aborting:
             return self
+
+        if type(tags) != list:
+            self.logFile.write('Unable to use your set_dont_like '
+                               'configuration!\n')
+            print ('Unable to use your set_dont_like configuration!')
+            self.aborting = True
 
         self.dont_like = tags or []
 
@@ -342,7 +354,7 @@ class InstaPy:
         self.like_by_followers_lower_limit = limit or 0
         return self
 
-    def like_by_locations(self, locations=None, amount=50, media=None):
+    def like_by_locations(self, locations=None, amount=50, media=None, skip_top_posts=True):
         """Likes (default) 50 images per given locations"""
         if self.aborting:
             return self
@@ -362,7 +374,7 @@ class InstaPy:
             self.logFile.write('--> {}\n'.format(location.encode('utf-8')))
 
             try:
-                links = get_links_for_location(self.browser, location, amount, media)
+                links = get_links_for_location(self.browser, location, amount, media, skip_top_posts)
             except NoSuchElementException:
                 print('Too few images, skipping this location')
                 self.logFile.write('Too few images, skipping this location\n')
@@ -451,7 +463,7 @@ class InstaPy:
 
         return self
 
-    def like_by_tags(self, tags=None, amount=50, byClass=True, media=None):
+    def like_by_tags(self, tags=None, amount=50, media=None, skip_top_posts=True):
 
         """Likes (default) 50 images per given tag"""
         if self.aborting:
@@ -472,7 +484,7 @@ class InstaPy:
             self.logFile.write('--> {}\n'.format(tag.encode('utf-8')))
 
             try:
-                links = get_links_for_tag(self.browser, tag, amount, byClass, media)
+                links = get_links_for_tag(self.browser, tag, amount, media, skip_top_posts)
             except NoSuchElementException:
                 print('Too few images, skipping this tag')
                 self.logFile.write('Too few images, skipping this tag\n')
@@ -705,9 +717,9 @@ class InstaPy:
             self.logFile.write('--> {}\n'.format(username.encode('utf-8')))
 
             following = randint(0, 100) <= self.follow_percentage
-            if self.do_follow and username not in self.dont_include \
-                    and checked_img and following \
-                    and self.follow_restrict.get(user_name, 0) < self.follow_times:
+            if (self.do_follow and username not in self.dont_include
+                    and checked_img and following
+                    and self.follow_restrict.get(username, 0) < self.follow_times):
                 followed += follow_user(self.browser, self.follow_restrict, self.username, username)
             else:
                 print('--> Not following')
@@ -844,11 +856,21 @@ class InstaPy:
             usernames = [usernames]
         try:
             for user in usernames:
-                userToInteract += get_given_user_followers(self.browser, user, amount, self.dont_include, self.username, self.follow_restrict, random)
+
+                user = get_given_user_followers(self.browser,
+                                                user,
+                                                amount,
+                                                self.dont_include,
+                                                self.username,
+                                                self.follow_restrict,
+                                                random)
+                if type(user) is list:
+                    userToInteract += user
         except (TypeError, RuntimeWarning) as err:
             if type(err) == RuntimeWarning:
                 print(u'Warning: {} , stopping follow_users'.format(err))
-                self.logFile.write('Warning: {} , stopping follow_users\n'.format(err))
+                self.logFile.write(
+                    'Warning: {} , stopping follow_users\n'.format(err))
 
                 return self
             else:
@@ -858,10 +880,15 @@ class InstaPy:
 
                 return self
 
-        print('--> Users: {}'.format(len(userToInteract)))
-        print('')
-        userToInteract = sample(userToInteract, int(ceil(self.user_interact_percentage*len(userToInteract)/100)))
-        self.like_by_users(userToInteract, self.user_interact_amount, self.user_interact_random, self.user_interact_media)
+        print('--> Users: {} \n'.format(len(userToInteract)))
+        userToInteract = sample(
+            userToInteract,
+            int(ceil(self.user_interact_percentage*len(userToInteract)/100)))
+
+        self.like_by_users(userToInteract,
+                           self.user_interact_amount,
+                           self.user_interact_random,
+                           self.user_interact_media)
 
         return self
 

@@ -1,4 +1,4 @@
-<img src="http://i.imgur.com/9ZjtveL.png" width="150" align="right">
+<img src="https://i.imgur.com/sJzfZsL.jpg" width="150" align="right">
 
 # InstaPy
 [![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/timgrossmann/InstaPy/blob/master/LICENSE)
@@ -35,15 +35,20 @@ Head over to https://github.com/timgrossmann/InstaPy/wiki/Reporting-An-Issue to 
 ```python
 from instapy import InstaPy
 
-InstaPy(username='test', password='test')\
-  .login()\
-  .set_do_comment(True, percentage=10)\
-  .set_comments(['Cool!', 'Awesome!', 'Nice!'])\
-  .set_dont_include(['friend1', 'friend2', 'friend3'])\
-  .set_dont_like(['food', 'girl', 'hot'])\
-  .set_ignore_if_contains(['pizza'])\
-  .like_by_tags(['dog', '#cat'], amount=100)\
-  .end()
+insta_username = ''
+insta_password = ''
+
+session = InstaPy(username=insta_username, password=insta_password)
+session.login()
+
+session.set_do_comment(True, percentage=10)
+session.set_comments(['Cool!', 'Awesome!', 'Nice!'])
+session.set_dont_include(['friend1', 'friend2', 'friend3'])
+session.set_dont_like(['food', 'girl', 'hot'])
+session.set_ignore_if_contains(['pizza'])
+session.like_by_tags(['dog', '#cat'], amount=100)
+
+session.end()
 ```
 ### How not to be banned ?
 Built-in delays prevent your account from getting banned. (Just make sure you don't like 1000s of post/day)
@@ -65,7 +70,12 @@ Built-in delays prevent your account from getting banned. (Just make sure you do
 
 Make sure to get the right ```chromedriver``` for your system [from here](https://sites.google.com/a/chromium.org/chromedriver/downloads). Just put it in ```/assets```.
 
-> If you're not too familiar with code and you're working on Windows, try out this tool to set up the settings: [InstaPy Windows GUI](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
+#### Make sure to use one of the GUIs for easiest setup!
+**[Official Cross Platform GUI](https://github.com/ahmadudin/electron-instaPy-GUI)**
+
+[<img src="https://raw.githubusercontent.com/ahmadudin/ahmadudin.github.io/master/assets/images/screencapture1.PNG" width="400" />](https://github.com/ahmadudin/electron-instaPy-GUI)
+
+[Third Party InstaPy GUI for Windows](https://github.com/Nemixalone/GUI-tool-for-InstaPy-script)
 
 ### Start
 
@@ -97,9 +107,17 @@ session.set_sleep_reduce(95)
 #in this case: 100 dog-posts and 100 cat-posts
 session.like_by_tags(['#dog', 'cat'], amount=100)
 
+#likes specified amount of posts for each hashtag in the array (the '#' is optional)
+#in this case: 100 dog-posts and 100 cat-posts including media entities from top posts section (skip top posts y default)
+session.like_by_tags(['#dog', 'cat'], amount=100, skip_top_posts=False)
+
 #likes specified amount of posts for each location in the array
 #in this case: 100 posts geotagged at the chrysler building and 100 posts geotagged at the salton sea
 session.like_by_locations(['26429/chrysler-building/', '224442573/salton-sea/'], amount=100)
+
+#likes specified amount of posts for each location in the array including top posts
+#in this case: 100 posts geotagged at the chrysler building and 100 posts geotagged at the salton sea and include media entities from top posts section (skip top posts by default)
+session.like_by_locations(['26429/chrysler-building/', '224442573/salton-sea/'], amount=100, skip_top_posts=False)
 
 #gets tags from image passed as instagram-url and likes specified amount of images for each tag
 session.like_from_image(url='www.instagram.com/p/BSrfITEFUAM/', amount=100)
@@ -117,7 +135,7 @@ session.like_from_image(url='www.instagram.com/image', amount=50, media='Photo')
 session.like_by_tags(['#cat'], amount=15, media='Video')
 session.like_from_image(url='www.instagram.com/image', amount=15, media='Video')
 
-#Likes 10 random photo of geach given user
+#Likes 10 random photo of each given user
 
 session.like_by_users(usernames=['friend1', 'friend2', 'friend3'], amount=10, random=True, media='Photo')
 
@@ -253,6 +271,9 @@ session.set_lower_follower_count(limit = 1)
 session.like_by_locations(['224442573/salton-sea/'], amount=100)
 or
 session.like_by_locations(['224442573'], amount=100)
+or
+# Include media entities from top posts section
+session.like_by_locations(['224442573'], amount=5, skip_top_posts=False)
 ```
 
 You can find locations for the `like_by_locations` function by:
@@ -404,15 +425,20 @@ Chrome and ChromeDriver might be an issue on some ARM based systems. Alternative
 ```python
 from instapy import InstaPy
 
-InstaPy(username='test', password='test', use_firefox=True, page_delay=25)\
-    .set_switch_language(False)\
-    .login()\
-    .set_do_comment(True, percentage=10) \
-    .set_comments(['Cool!', 'Awesome!', 'Nice!']) \
-    .set_dont_include(['friend1', 'friend2', 'friend3']) \
-    .set_dont_like(['food', 'girl', 'hot']) \
-    .like_by_tags(['dog', '#cat'], amount=2) \
-    .end()
+insta_username = ''
+insta_password = ''
+
+session = InstaPy(username=insta_username, password=insta_password, use_firefox=True, page_delay=25)
+session.set_switch_language(False)
+session.login()
+
+session.set_do_comment(True, percentage=10)
+session.set_comments(['Cool!', 'Awesome!', 'Nice!'])
+session.set_dont_include(['friend1', 'friend2', 'friend3'])
+session.set_dont_like(['food', 'girl', 'hot'])
+session.like_by_tags(['dog', '#cat'], amount=2)
+
+session.end()
 ```
 
 ## Clarifai ImageAPI
@@ -430,18 +456,23 @@ export CLARIFAI_API_KEY="<API KEY>"
 ```python
 from instapy import InstaPy
 
-InstaPy(username='test', password='test')\
-  .login()\
-  .set_do_comment(True, percentage=10)\
-  .set_comments(['Cool!', 'Awesome!', 'Nice!'])\
-  .set_dont_include(['friend1', 'friend2', 'friend3'])\
-  .set_dont_like(['food', 'girl', 'hot'])\
-  .set_ignore_if_contains(['pizza'])\
-  .set_use_clarifai(enabled=True)\
-  .clarifai_check_img_for(['nsfw'])\
-  .clarifai_check_img_for(['food', 'lunch', 'dinner'], comment=True, comments=['Tasty!', 'Nice!', 'Yum!'])\
-  .like_by_tags(['dog', '#cat'], amount=100)\
-  .end()
+insta_username = ''
+insta_password = ''
+
+session = InstaPy(username=insta_username, password=insta_password)
+session.login()
+
+session.set_do_comment(True, percentage=10)
+session.set_comments(['Cool!', 'Awesome!', 'Nice!'])
+session.set_dont_include(['friend1', 'friend2', 'friend3'])
+session.set_dont_like(['food', 'girl', 'hot'])
+session.set_ignore_if_contains(['pizza'])
+session.set_use_clarifai(enabled=True)
+session.clarifai_check_img_for(['nsfw'])
+session.clarifai_check_img_for(['food', 'lunch', 'dinner'], comment=True, comments=['Tasty!', 'Nice!', 'Yum!'])
+session.like_by_tags(['dog', '#cat'], amount=100)
+
+session.end()
 ```
 ### Enabling Imagechecking
 
