@@ -2,8 +2,8 @@ from instapy import InstaPy
 from random import randrange
 from time import sleep 
 
-insta_username = 'jattecizexi9495'
-insta_password = '12345Azerty'
+insta_username = 'pierothepup'
+insta_password = 'spooky12!'
 
 # if you want to run this script on a server, 
 # simply add nogui=True to the InstaPy() constructor
@@ -16,11 +16,11 @@ session.set_use_clarifai(enabled=False)
 # do the actual liking
 while True:
     #Strategy 1: Hashtab
-    tagsList = ['bluemerle', 'bluemerlepom', 'bluemerlepomeranian', 'dogstagram', 'dogoftheday', 'pupsofinstagram', 'pup', '6weeksold', 'sleepypuppy', 'pominu', 'puppyboots', 'boots', 'spots', 'bluemerlepom', 'bluemerle', 'pomeranianshibainu', 'shibainu', 'pomeranianpuppy'\
-            'sleepingpuppy', 'puppybaby', 'doggystyle', 'thedogslife', 'thedoggycalendar', 'littlebabe', 'littledog', 'designerdog', 'mix', 'shibainupuppy', 'shibainu', 'pominu', 'pom', 'pomeranianpuppy', 'pomeranian', 'puppiesofig']
-    for i in range(len(tagsList)):
-        session.like_by_tags([tagsList[i]], amount=randrange(30, 70))
-        sleep(3600)
+    # tagsList = ['bluemerle', 'bluemerlepom', 'bluemerlepomeranian', 'dogstagram', 'dogoftheday', 'pupsofinstagram', 'pup', '6weeksold', 'sleepypuppy', 'pominu', 'puppyboots', 'boots', 'spots', 'bluemerlepom', 'bluemerle', 'pomeranianshibainu', 'shibainu', 'pomeranianpuppy'\
+    #         'sleepingpuppy', 'puppybaby', 'doggystyle', 'thedogslife', 'thedoggycalendar', 'littlebabe', 'littledog', 'designerdog', 'mix', 'shibainupuppy', 'shibainu', 'pominu', 'pom', 'pomeranianpuppy', 'pomeranian', 'puppiesofig']
+    # for i in range(len(tagsList)):
+    #     session.like_by_tags([tagsList[i]], amount=randrange(30, 70))
+    #     sleep(3600)
     
     #strategy 2: Follower liking
     session.set_user_interact(amount=10, random=True, percentage=100, media='Photo')
