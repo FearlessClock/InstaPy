@@ -7,12 +7,16 @@ from re import findall
 from selenium.webdriver.common.keys import Keys
 
 from .time_util import sleep
+from .util import update_activity
+from .util import add_user_to_blacklist
 
 
-def get_links_from_feed(browser, amount, num_of_search):
+def get_links_from_feed(browser, amount, num_of_search, logger):
     """Fetches random number of links from feed and returns a list of links"""
 
     browser.get('https://www.instagram.com')
+    # update server calls
+    update_activity()
     sleep(2)
 
     for i in range(num_of_search + 1):
@@ -22,21 +26,21 @@ def get_links_from_feed(browser, amount, num_of_search):
 
     # get links
     link_elems = browser.find_elements_by_xpath(
-        "//main//article//div[2]//div[2]//a")
+        "//article/div[2]/div[2]/a")
 
     total_links = len(link_elems)
-    print("\nTotal of links feched for analysis:", total_links)
+    logger.info("Total of links feched for analysis: {}".format(total_links))
     links = []
     try:
         if link_elems:
             links = [link_elem.get_attribute('href') for link_elem in link_elems]
-            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             for i, link in enumerate(links):
                 print(i, link)
-            print("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+            logger.info("~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
     except BaseException as e:
-        print("link_elems error \n", str(e))
+        logger.error("link_elems error {}".format(str(e)))
 
     return links
 
@@ -44,6 +48,7 @@ def get_links_from_feed(browser, amount, num_of_search):
 def get_links_for_location(browser,
                            location,
                            amount,
+                           logger,
                            media=None,
                            skip_top_posts=True):
 
@@ -59,8 +64,9 @@ def get_links_for_location(browser,
         # Make it an array to use it in the following part
         media = [media]
 
-    browser.get('https://www.instagram.com/explore/locations/'
-                + location)
+    browser.get('https://www.instagram.com/explore/locations/' + location)
+    # update server calls
+    update_activity()
     sleep(2)
 
     # clicking load more
@@ -72,12 +78,28 @@ def get_links_for_location(browser,
         load_button = body_elem.find_element_by_xpath(
             '//a[contains(@class, "_1cr2e _epyes")]')
     except:
-        print('Load button not found, working with current images!')
+        try:
+            # scroll down to load posts
+            for i in range(int(ceil(amount/12))):
+                browser.execute_script(
+                    "window.scrollTo(0, document.body.scrollHeight);")
+                sleep(2)
+        except:
+            logger.warning(
+                'Load button not found, working with current images!')
+        else:
+            abort = False
+            body_elem.send_keys(Keys.END)
+            sleep(2)
+            # update server calls
+            update_activity()
     else:
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
         load_button.click()
+        # update server calls
+        update_activity()
 
     body_elem.send_keys(Keys.HOME)
     sleep(1)
@@ -112,6 +134,8 @@ def get_links_for_location(browser,
             # Keep the latest window active while loading more posts
             before_load = total_links
             body_elem.send_keys(Keys.END)
+            # update server calls
+            update_activity()
             sleep(1)
             body_elem.send_keys(Keys.HOME)
             sleep(1)
@@ -128,7 +152,12 @@ def get_links_for_location(browser,
     return links[:amount]
 
 
-def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
+def get_links_for_tag(browser,
+                      tag,
+                      amount,
+                      logger,
+                      media=None,
+                      skip_top_posts=True):
     """Fetches the number of links specified
     by amount and returns a list of links"""
     if media is None:
@@ -143,6 +172,8 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
 
     browser.get('https://www.instagram.com/explore/tags/'
                 + (tag[1:] if tag[:1] == '#' else tag))
+    # update server calls
+    update_activity()
     sleep(2)
 
     # clicking load more
@@ -154,12 +185,28 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
         load_button = body_elem.find_element_by_xpath(
             '//a[contains(@class, "_1cr2e _epyes")]')
     except:
-        print('Load button not found, working with current images!')
+        try:
+            # scroll down to load posts
+            for i in range(int(ceil(amount/12))):
+                browser.execute_script(
+                    "window.scrollTo(0, document.body.scrollHeight);")
+                sleep(2)
+        except:
+            logger.warning(
+                'Load button not found, working with current images!')
+        else:
+            abort = False
+            body_elem.send_keys(Keys.END)
+            sleep(2)
+            # update server calls
+            update_activity()
     else:
         abort = False
         body_elem.send_keys(Keys.END)
         sleep(2)
         load_button.click()
+        # update server calls
+        update_activity()
 
     body_elem.send_keys(Keys.HOME)
     sleep(1)
@@ -181,7 +228,7 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
             filtered_links = len(links)
 
     except BaseException as e:
-        print("link_elems error \n", str(e))
+        logger.error("link_elems error {}".format(str(e)))
 
     while (filtered_links < amount) and not abort:
         amount_left = amount - filtered_links
@@ -201,6 +248,8 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
             # Keep the latest window active while loading more posts
             before_load = total_links
             body_elem.send_keys(Keys.END)
+            # update server calls
+            update_activity()
             sleep(1)
             body_elem.send_keys(Keys.HOME)
             sleep(1)
@@ -220,7 +269,8 @@ def get_links_for_tag(browser, tag, amount, media=None, skip_top_posts=True):
 def get_links_for_username(browser,
                            username,
                            amount,
-                           is_random=False,
+                           logger,
+                           randomize=False,
                            media=None):
 
     """Fetches the number of links specified
@@ -235,11 +285,12 @@ def get_links_for_username(browser,
         # Make it an array to use it in the following part
         media = [media]
 
-    print('Getting ', username, 'image list...')
+    logger.info('Getting {} image list...'.format(username))
 
     # Get  user profile page
     browser.get('https://www.instagram.com/' + username)
-    sleep(2)
+    # update server calls
+    update_activity()
 
     body_elem = browser.find_element_by_tag_name('body')
 
@@ -247,24 +298,32 @@ def get_links_for_username(browser,
         is_private = body_elem.find_element_by_xpath(
             '//h2[@class="_kcrwx"]')
     except:
-        print('Interaction begin...')
-        print('')
+        logger.info('Interaction begin...')
     else:
         if is_private:
-            print('This user is private...')
-            print('')
+            logger.warning('This user is private...')
             return False
-
-    sleep(2)
 
     abort = True
 
-    # Clicking load more
     try:
         load_button = body_elem.find_element_by_xpath(
             '//a[contains(@class, "_1cr2e _epyes")]')
     except:
-        print('Load button not found, working with current images!')
+        try:
+            # scroll down to load posts
+            for i in range(int(ceil(amount/12))):
+                browser.execute_script(
+                    "window.scrollTo(0, document.body.scrollHeight);")
+                sleep(2)
+        except:
+            logger.warning('Load button not found, working with current images!')
+        else:
+            abort = False
+            body_elem.send_keys(Keys.END)
+            sleep(2)
+            # update server calls
+            update_activity()
     else:
         abort = False
         body_elem.send_keys(Keys.END)
@@ -277,7 +336,8 @@ def get_links_for_username(browser,
             sleep(2)
             body_elem.send_keys(Keys.END)
             load_button.click()
-
+        # update server calls
+        update_activity()
 
     body_elem.send_keys(Keys.HOME)
     sleep(2)
@@ -295,9 +355,9 @@ def get_links_for_username(browser,
             filtered_links = len(links)
 
     except BaseException as e:
-        print("link_elems error \n", str(e))
+        logger.error("link_elems error {}}".format(str(e)))
 
-    if is_random:
+    if randomize:
         # Expanding the pooulation for better random distribution
         amount = amount * 5
 
@@ -319,6 +379,8 @@ def get_links_for_username(browser,
             # Keep the latest window active while loading more posts
             before_load = total_links
             body_elem.send_keys(Keys.END)
+            # update server calls
+            update_activity()
             sleep(1)
             body_elem.send_keys(Keys.HOME)
             sleep(1)
@@ -332,7 +394,7 @@ def get_links_for_username(browser,
                  if link_elem.text in media]
         filtered_links = len(links)
 
-    if is_random:
+    if randomize:
         # Shuffle the population index
         links = random.sample(links, filtered_links)
 
@@ -346,16 +408,19 @@ def check_link(browser,
                ignore_users,
                username,
                like_by_followers_upper_limit,
-               like_by_followers_lower_limit):
+               like_by_followers_lower_limit,
+               logger):
 
     browser.get(link)
+    # update server calls
+    update_activity()
     sleep(2)
 
     """Check if the Post is Valid/Exists"""
     post_page = browser.execute_script(
         "return window._sharedData.entry_data.PostPage")
     if post_page is None:
-        print('Unavailable Page: {}'.format(link.encode('utf-8')))
+        logger.warning('Unavailable Page: {}'.format(link.encode('utf-8')))
         return True, None, None, 'Unavailable Page'
 
     """Gets the description of the link and checks for the dont_like tags"""
@@ -410,19 +475,23 @@ def check_link(browser,
     if image_text is None:
         image_text = "No description"
 
-    print('Image from: {}'.format(user_name.encode('utf-8')))
+    logger.info('Image from: {}'.format(user_name.encode('utf-8')))
 
     """Find the number of followes the user has"""
     if like_by_followers_upper_limit or like_by_followers_lower_limit:
         userlink = 'https://www.instagram.com/' + user_name
         browser.get(userlink)
+        # update server calls
+        update_activity()
         sleep(1)
         num_followers = browser.execute_script(
             "return window._sharedData.entry_data."
             "ProfilePage[0].user.followed_by.count")
         browser.get(link)
+        # update server calls
+        update_activity()
         sleep(1)
-        print('Number of Followers: {}'.format(num_followers))
+        logger.info('Number of Followers: {}'.format(num_followers))
 
         if like_by_followers_upper_limit and \
            num_followers > like_by_followers_upper_limit:
@@ -434,8 +503,8 @@ def check_link(browser,
                 return True, user_name, is_video, \
                     'Number of followers does not reach minimum'
 
-    print('Link: {}'.format(link.encode('utf-8')))
-    print('Description: {}'.format(image_text.encode('utf-8')))
+    logger.info('Link: {}'.format(link.encode('utf-8')))
+    logger.info('Description: {}'.format(image_text.encode('utf-8')))
 
     """Check if the user_name is in the ignore_users list"""
     if (user_name in ignore_users) or (user_name == username):
@@ -464,7 +533,7 @@ def check_link(browser,
     return False, user_name, is_video, 'None'
 
 
-def like_image(browser):
+def like_image(browser, username, blacklist, logger):
     """Likes the browser opened image"""
     like_elem = browser.find_elements_by_xpath(
         "//a[@role='button']/span[text()='Like']/..")
@@ -473,20 +542,28 @@ def like_image(browser):
 
     if len(like_elem) == 1:
         like_elem[0].send_keys("\n")
-        print('--> Image Liked!')
+        logger.info('--> Image Liked!')
+        update_activity('likes')
+        if blacklist['enabled'] is True:
+            action = 'liked'
+            add_user_to_blacklist(
+                browser, username, blacklist['campaign'], action, logger
+            )
         sleep(2)
         return True
     elif len(liked_elem) == 1:
-        print('--> Already Liked!')
+        logger.info('--> Already Liked!')
         return False
     else:
-        print('--> Invalid Like Element!')
+        logger.info('--> Invalid Like Element!')
         return False
 
 
 def get_tags(browser, url):
     """Gets all the tags of the given description in the url"""
     browser.get(url)
+    # update server calls
+    update_activity()
     sleep(1)
 
     graphql = browser.execute_script(
