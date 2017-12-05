@@ -116,6 +116,15 @@ class InstaPy:
         file_handler.setFormatter(logger_formatter)
         self.logger.addHandler(file_handler)
 
+        self.likeLogger = logging.getLogger('likes')
+        self.likeLogger.setLevel(logging.DEBUG)
+        file_handler = logging.FileHandler('./logs/likes.txt')
+        file_handler.setLevel(logging.DEBUG)
+        logger_formatter = logging.Formatter('%(levelname)s - %(message)s')
+        file_handler.setFormatter(logger_formatter)
+        self.likeLogger.addHandler(file_handler)
+
+
         if show_logs is True:
             console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.DEBUG)
@@ -649,6 +658,9 @@ class InstaPy:
 
                         if liked:
                             liked_img += 1
+                            requests.get('http://192.168.1.196/like')
+                            self.likeLogger.info('[{}]'.format(liked_img))
+                            logging.info(liked_img)
                             checked_img = True
                             temp_comments = []
                             commenting = (random.randint(0, 100) <=
@@ -777,6 +789,7 @@ class InstaPy:
                                         username,
                                         self.blacklist,
                                         self.logger)
+                requests.get('http://192.168.1.196/follow')
             else:
                 self.logger.info('--> Not following')
                 sleep(1)
