@@ -658,7 +658,10 @@ class InstaPy:
 
                         if liked:
                             liked_img += 1
-                            requests.get('http://192.168.1.196/like')
+                            try:
+                                requests.get('http://192.168.1.196/like')
+                            except:
+                                print("Server not running")
                             self.likeLogger.info('[{}]'.format(liked_img))
                             logging.info(liked_img)
                             checked_img = True
@@ -789,7 +792,10 @@ class InstaPy:
                                         username,
                                         self.blacklist,
                                         self.logger)
-                requests.get('http://192.168.1.196/follow')
+                try:
+                    requests.get('http://192.168.1.196/follow')
+                except:
+                    print("Server not running")
             else:
                 self.logger.info('--> Not following')
                 sleep(1)
