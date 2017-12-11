@@ -8,7 +8,7 @@ insta_password = 'spooky12!'
 
 # if you want to run this script on a server, 
 # simply add nogui=True to the InstaPy() constructor
-session = InstaPy(username=insta_username, password=insta_password, use_firefox=False)
+session = InstaPy(username=insta_username, password=insta_password, use_firefox=True)
 session.login()
 
 # set up all the setting
