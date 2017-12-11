@@ -3,7 +3,7 @@ from datetime import datetime
 import requests
 
 
-def log_follower_num(browser, username):
+def log_follower_num(browser, username, client=None):
     """Prints and logs the current number of followers to
     a seperate file"""
     browser.get('https://www.instagram.com/' + username)
@@ -11,7 +11,10 @@ def log_follower_num(browser, username):
     followed_by = browser.execute_script(
         "return window._sharedData.""entry_data.ProfilePage[0]."
         "user.followed_by.count")
-    requests.post("http://192.168.1.196/followers", followed_by)
+
+    if client is not None:
+        client.publish("instapy/followers", followed_by)  # publish
+
     with open('./logs/followerNum.txt', 'a') as numFile:
         numFile.write(
             '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), followed_by or 0))

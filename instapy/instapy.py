@@ -41,11 +41,11 @@ from .unfollow_util import follow_given_user
 from .unfollow_util import load_follow_restriction
 from .unfollow_util import dump_follow_restriction
 from .unfollow_util import set_automated_followed_pool
+import paho.mqtt.client as mqtt
 
 
 class InstaPy:
     """Class to be instantiated to use the script"""
-
     def __init__(self,
                  username=None,
                  password=None,
@@ -54,6 +54,11 @@ class InstaPy:
                  use_firefox=False,
                  page_delay=25,
                  show_logs=True):
+
+        broker_address = "192.168.1.196"
+        self.client = mqtt.Client("P1")  # create new instance
+        self.client.connect(broker_address)  # connect to broker
+        self.client.publish("instapy/connected", "connected")  # publish
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -222,7 +227,7 @@ class InstaPy:
         else:
             self.logger.info('Logged in successfully!')
 
-        log_follower_num(self.browser, self.username)
+        log_follower_num(self.browser, self.username, self.client)
 
         return self
 
@@ -632,7 +637,7 @@ class InstaPy:
             except NoSuchElementException:
                 self.logger.error('Too few images, skipping this tag')
                 continue
-            log_follower_num(self.browser, self.username)
+            log_follower_num(self.browser, self.username, self.client)
             for i, link in enumerate(links):
                 self.logger.info('[{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
@@ -659,7 +664,7 @@ class InstaPy:
                         if liked:
                             liked_img += 1
                             try:
-                                requests.get('http://192.168.1.196/like')
+                                self.client.publish("instapy/like")  # publish
                             except:
                                 print("Server not running")
                             self.likeLogger.info('[{}]'.format(liked_img))
@@ -793,7 +798,7 @@ class InstaPy:
                                         self.blacklist,
                                         self.logger)
                 try:
-                    requests.get('http://192.168.1.196/follow')
+                    self.client.publish("instapy/follow")
                 except:
                     print("Server not running")
             else:
