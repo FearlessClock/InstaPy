@@ -632,7 +632,7 @@ class InstaPy:
             except NoSuchElementException:
                 self.logger.error('Too few images, skipping this tag')
                 continue
-
+            log_follower_num(self.browser, self.username)
             for i, link in enumerate(links):
                 self.logger.info('[{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)

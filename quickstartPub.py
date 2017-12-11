@@ -16,7 +16,7 @@ session.set_use_clarifai(enabled=False)
 # do the actual liking
 while True:
     #Strategy 1: Hashtab
-    tagsList = ['bluemerle', 'bluemerlepom', 'bluemerlepomeranian', 'dogstagram', 'dogoftheday', 'pupsofinstagram', 'pup', '6weeksold', 'sleepypuppy', 'pominu', 'puppyboots', 'boots', 'spots', 'bluemerlepom', 'bluemerle', 'pomeranianshibainu', 'shibainu', 'pomeranianpuppy'\
+    tagsList = ['bluemerlepom', 'bluemerle', 'bluemerlepomeranian', 'dogstagram', 'dogoftheday', 'pupsofinstagram', 'pup', '6weeksold', 'sleepypuppy', 'pominu', 'puppyboots', 'boots', 'spots', 'bluemerlepom', 'bluemerle', 'pomeranianshibainu', 'shibainu', 'pomeranianpuppy'\
             'sleepingpuppy', 'puppybaby', 'doggystyle', 'thedogslife', 'thedoggycalendar', 'littlebabe', 'littledog', 'designerdog', 'mix', 'shibainupuppy', 'shibainu', 'pominu', 'pom', 'pomeranianpuppy', 'pomeranian', 'puppiesofig']
     for i in range(len(tagsList)):
         session.like_by_tags([tagsList[i]], amount=randrange(30, 70))
