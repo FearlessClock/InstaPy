@@ -11,7 +11,7 @@ def log_follower_num(browser, username):
     followed_by = browser.execute_script(
         "return window._sharedData.""entry_data.ProfilePage[0]."
         "user.followed_by.count")
-    requests.post("192.168.1.196/followers", followed_by)
+    requests.post("http://192.168.1.196/followers", followed_by)
     with open('./logs/followerNum.txt', 'a') as numFile:
         numFile.write(
             '{:%Y-%m-%d %H:%M} {}\n'.format(datetime.now(), followed_by or 0))
