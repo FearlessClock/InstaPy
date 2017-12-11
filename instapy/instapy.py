@@ -58,6 +58,7 @@ class InstaPy:
         broker_address = "192.168.1.196"
         self.client = mqtt.Client("P1")  # create new instance
         self.client.connect(broker_address)  # connect to broker
+        self.client.loop_start()
         self.client.publish("instapy/connected", "connected")  # publish
 
         if nogui:
@@ -641,7 +642,7 @@ class InstaPy:
             for i, link in enumerate(links):
                 self.logger.info('[{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
-
+                self.log_followers();
                 try:
                     inappropriate, user_name, is_video, reason = (
                         check_link(self.browser,
@@ -1505,6 +1506,9 @@ class InstaPy:
                         self.dont_include.append(row['username'])
         except:
             self.logger.info('Campaign {} first run'.format(campaign))
+
+    def log_followers(self):
+        log_follower_num(self.browser, self.username, self.client)
 
     def end(self):
         """Closes the current session"""

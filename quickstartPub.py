@@ -26,8 +26,10 @@ while isRunning:
                     'thedogslife', 'thedoggycalendar', 'littlebabe', 'littledog', 'designerdog', 'mix', 'shibainupuppy',
                     'shibainu', 'pominu', 'pom', 'pomeranianpuppy', 'pomeranian', 'puppiesofig']
         for i in range(len(tagsList)):
-            session.like_by_tags([tagsList[i]], amount=randrange(30, 70))
-            sleep(3600)
+            session.like_by_tags([tagsList[i]], amount=randrange(5, 10))
+            for j in range(100):
+                session.log_followers()
+                sleep(36)
 
         # strategy 2: Follower liking
         session.set_user_interact(amount=10, randomize=True, percentage=100, media='Photo')
