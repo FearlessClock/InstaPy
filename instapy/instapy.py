@@ -55,8 +55,8 @@ class InstaPy:
                  page_delay=25,
                  show_logs=True):
 
-        broker_address = "192.168.1.196"
-        self.client = mqtt.Client("P1")  # create new instance
+        broker_address = "localhost"
+        self.client = mqtt.Client("instapy")  # create new instance
         self.client.connect(broker_address)  # connect to broker
         self.client.loop_start()
         self.client.publish("instapy/connected", "connected")  # publish

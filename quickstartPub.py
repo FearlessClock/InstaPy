@@ -26,9 +26,10 @@ while isRunning:
                     'thedogslife', 'thedoggycalendar', 'littlebabe', 'littledog', 'designerdog', 'mix', 'shibainupuppy',
                     'shibainu', 'pominu', 'pom', 'pomeranianpuppy', 'pomeranian', 'puppiesofig']
         for i in range(len(tagsList)):
-            session.like_by_tags([tagsList[i]], amount=randrange(5, 10))
+            session.like_by_tags([tagsList[i]], amount=randrange(30, 70))
             for j in range(100):
                 session.log_followers()
+                print(j)
                 sleep(36)
 
         # strategy 2: Follower liking
@@ -39,9 +40,12 @@ while isRunning:
         userList = ['jiffpom', 'pomeranianworld', 'mr.monsterpup', 'thedogist', 'dogsofinstagram']
         for i in range(len(userList)):
             session.interact_user_followers([userList[i]], amount=randrange(10, 40), randomize=True)
-            sleep(3600)
+            for j in range(100):
+                session.log_followers()
+                print(j)
+                sleep(36)
     except:
-        broker_address = "192.168.1.196"
+        broker_address = "localhost"
         client = mqtt.Client("We lost a connection")  # create new instance
         client.connect(broker_address)  # connect to broker
         client.publish("instapy/connected", "disconnected")  # publish
