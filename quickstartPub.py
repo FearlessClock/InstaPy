@@ -45,7 +45,7 @@ while isRunning:
                 print(j)
                 sleep(36)
     except:
-        broker_address = "192.168.1.196"
+        broker_address = "localhost"
         client = mqtt.Client("We lost a connection")  # create new instance
         client.connect(broker_address)  # connect to broker
         client.publish("instapy/connected", "disconnected")  # publish
