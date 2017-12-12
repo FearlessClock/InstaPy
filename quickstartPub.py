@@ -29,6 +29,7 @@ while isRunning:
             session.like_by_tags([tagsList[i]], amount=randrange(5, 10))
             for j in range(100):
                 session.log_followers()
+                print(j)
                 sleep(36)
 
         # strategy 2: Follower liking
@@ -39,7 +40,10 @@ while isRunning:
         userList = ['jiffpom', 'pomeranianworld', 'mr.monsterpup', 'thedogist', 'dogsofinstagram']
         for i in range(len(userList)):
             session.interact_user_followers([userList[i]], amount=randrange(10, 40), randomize=True)
-            sleep(3600)
+            for j in range(100):
+                session.log_followers()
+                print(j)
+                sleep(36)
     except:
         broker_address = "192.168.1.196"
         client = mqtt.Client("We lost a connection")  # create new instance
