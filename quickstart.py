@@ -8,9 +8,14 @@ from instapy import InstaPy
 from random import randrange
 from time import sleep 
 
-insta_username = 'jattecizexi9495'
-insta_password = '12345Azerty'
+insta_username = None
+insta_password = None
+usersFile = open("users.txt", "r")
 
+information = usersFile.read().split(",")
+if len(information) > 1:
+    insta_username = information[0]
+    insta_password = information[1]
     
 # set headless_browser=True if you want to run InstaPy on a server
 
@@ -18,37 +23,43 @@ insta_password = '12345Azerty'
 # library in the /usr/lib/pythonX.X/ directory:
 #   Settings.database_location = '/path/to/instapy.db'
 #   Settings.chromedriver_location = '/path/to/chromedriver'
-session = InstaPy(username=insta_username, password=insta_password,
-                    headless_browser=False,
-                        use_firefox=True,
-                            multi_logs=True)
+session = InstaPy(username=insta_username, password=insta_password)
 
         
 try:
         
     session.login()
+    tagFile = open("taglists.txt", "r")
+
+    tagsList = []
+    for line in tagFile:
+        tagsList.append(line.strip())
+
+    userList = []
+    userToInteractWithFile = open("interactuserlists.txt", "r")
+
+    for line in userToInteractWithFile:
+        userList.append(line.strip())
+
 
     # set up all the setting
     session.set_do_comment(False, percentage=0)
-    session.set_use_clarifai(enabled=False)
+    #session.set_use_clarifai(enabled=False)
     # do the actual liking
     while True:
         #Strategy 1: Hashtab
-        tagsList = ['bluemerle', 'bluemerlepom', 'bluemerlepomeranian', 'dogstagram', 'dogoftheday', 'pupsofinstagram', 'pup', '6weeksold', 'sleepypuppy', 'pominu', 'puppyboots', 'boots', 'spots', 'bluemerlepom', 'bluemerle', 'pomeranianshibainu', 'shibainu', 'pomeranianpuppy'\
-                'sleepingpuppy', 'puppybaby', 'doggystyle', 'thedogslife', 'thedoggycalendar', 'littlebabe', 'littledog', 'designerdog', 'mix', 'shibainupuppy', 'shibainu', 'pominu', 'pom', 'pomeranianpuppy', 'pomeranian', 'puppiesofig']
 
         for i in range(len(tagsList)):
             session.like_by_tags([tagsList[i]], amount=randrange(30, 70))
             sleep(3600)
         
         #strategy 2: Follower liking
-        session.set_user_interact(amount=10, random=True, percentage=100, media='Photo')
+        session.set_user_interact(amount=10, randomize=True, percentage=100, media='Photo')
         session.set_do_like(enabled=True, percentage=100)
         session.set_do_follow(enabled=True, percentage=100)
 
-        userList = ['jiffpom', 'pomeranianworld', 'mr.monsterpup', 'thedogist', 'dogsofinstagram']
         for i in range(len(userList)):
-            session.interact_user_followers([userList[i]], amount=randrange(10, 40), random=True)
+            session.interact_user_followers([userList[i]], amount=randrange(10, 40), randomize=True)
             sleep(3600)
 
 except Exception as exc:

@@ -110,3 +110,6 @@ logs/jattecizexi9495_followedPool.csv
 # pytest
 .pytest_cache/
 tests/logs
+
+# User information
+users.txt

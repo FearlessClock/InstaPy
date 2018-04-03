@@ -312,8 +312,7 @@ class InstaPy:
         else:
             self.logger.info('Logged in successfully!')
 
-        log_follower_num(self.browser, self.username, self.client)
-        self.followed_by = log_follower_num(self.browser, self.username, self.logfolder)
+        self.followed_by = log_follower_num(self.browser, self.username, self.logfolder, self.client)
 
         return self
 
@@ -879,7 +878,7 @@ class InstaPy:
             except NoSuchElementException:
                 self.logger.error('Too few images, skipping this tag')
                 continue
-            log_follower_num(self.browser, self.username, self.client)
+            log_follower_num(self.browser, self.username, self.logfolder, self.client)
             for i, link in enumerate(links):
                 self.logger.info('[{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
@@ -930,7 +929,6 @@ class InstaPy:
                                 self.client.publish("instapy/like")  # publish
                             except:
                                 print("Server not running")
-                            self.likeLogger.info('[{}]'.format(liked_img))
                             logging.info(liked_img)
                             checked_img = True
                             temp_comments = []
