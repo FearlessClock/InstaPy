@@ -23,7 +23,7 @@ if len(information) > 1:
 # library in the /usr/lib/pythonX.X/ directory:
 #   Settings.database_location = '/path/to/instapy.db'
 #   Settings.chromedriver_location = '/path/to/chromedriver'
-session = InstaPy(username=insta_username, password=insta_password)
+session = InstaPy(username=insta_username, password=insta_password, use_firefox=True, headless_browser=True)
 
         
 try:
@@ -51,7 +51,10 @@ try:
 
         for i in range(len(tagsList)):
             session.like_by_tags([tagsList[i]], amount=randrange(30, 70))
-            sleep(3600)
+            for j in range(100):
+                session.log_followers()
+                print(j)
+                sleep(36)
         
         #strategy 2: Follower liking
         session.set_user_interact(amount=10, randomize=True, percentage=100, media='Photo')
@@ -60,9 +63,16 @@ try:
 
         for i in range(len(userList)):
             session.interact_user_followers([userList[i]], amount=randrange(10, 40), randomize=True)
-            sleep(3600)
+            for j in range(100):
+                session.log_followers()
+                print(j)
+                sleep(36)
 
 except Exception as exc:
+    broker_address = "localhost"
+    client = mqtt.Client("We lost a connection")  # create new instance
+    client.connect(broker_address)  # connect to broker
+    client.publish("instapy/connected", "disconnected")  # publish
     # if changes to IG layout, upload the file to help us locate the change
     if isinstance(exc, NoSuchElementException):
         file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
