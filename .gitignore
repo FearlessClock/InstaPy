@@ -96,8 +96,17 @@ ENV/
 # Mac files
 .DS_Store
 
+# Storage
+instapy.db
+logs/
+
 # Editors
 .idea
 assets/chromedriver.exe
 logs/logFile.txt
 logs/jattecizexi9495_followedPool.csv
+.vscode
+
+# pytest
+.pytest_cache/
+tests/logs
