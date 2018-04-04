@@ -72,12 +72,16 @@ class InstaPy:
                  proxy_chrome_extension=None,
                  proxy_port=0,
                  bypass_suspicious_attempt=False,
-                 multi_logs=False):
+                 multi_logs=False,
+                 mqttClient=None):
 
-        broker_address = "localhost"
-        self.client = mqtt.Client("instapy")  # create new instance
-        self.client.connect(broker_address)  # connect to broker
-        self.client.loop_start()
+        if mqttClient is None:
+            broker_address = "localhost"
+            self.client = mqtt.Client("instapy")  # create new instance
+            self.client.connect(broker_address)  # connect to broker
+            self.client.loop_start()
+        else:
+            self.client = mqttClient
         self.client.publish("instapy/connected", "connected")  # publish
 
         if nogui:

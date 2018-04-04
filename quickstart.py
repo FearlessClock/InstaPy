@@ -7,6 +7,8 @@ from selenium.common.exceptions import NoSuchElementException
 from instapy import InstaPy
 from random import randrange
 from time import sleep 
+import paho.mqtt.client as mqtt
+
 
 insta_username = None
 insta_password = None
@@ -23,7 +25,11 @@ if len(information) > 1:
 # library in the /usr/lib/pythonX.X/ directory:
 #   Settings.database_location = '/path/to/instapy.db'
 #   Settings.chromedriver_location = '/path/to/chromedriver'
-session = InstaPy(username=insta_username, password=insta_password, use_firefox=True, headless_browser=True)
+broker_address = "localhost"
+client = mqtt.Client("InstaBot")  # create new instance
+client.connect(broker_address)  # connect to broker
+client.loop_start()
+session = InstaPy(username=insta_username, password=insta_password, headless_browser=True, mqttClient=client)
 
         
 try:
@@ -69,9 +75,6 @@ try:
                 sleep(36)
 
 except Exception as exc:
-    broker_address = "localhost"
-    client = mqtt.Client("We lost a connection")  # create new instance
-    client.connect(broker_address)  # connect to broker
     client.publish("instapy/connected", "disconnected")  # publish
     # if changes to IG layout, upload the file to help us locate the change
     if isinstance(exc, NoSuchElementException):
