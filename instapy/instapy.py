@@ -93,7 +93,7 @@ class InstaPy:
         self.proxy_address = proxy_address
         self.proxy_port = proxy_port
         self.proxy_chrome_extension = proxy_chrome_extension
-
+        
         self.username = username or os.environ.get('INSTA_USER')
         self.password = password or os.environ.get('INSTA_PW')
         self.nogui = nogui
