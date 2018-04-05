@@ -29,7 +29,7 @@ broker_address = "localhost"
 client = mqtt.Client("InstaBot")  # create new instance
 client.connect(broker_address)  # connect to broker
 client.loop_start()
-session = InstaPy(username=insta_username, password=insta_password, headless_browser=True, mqttClient=client)
+session = InstaPy(username=insta_username, password=insta_password, use_firefox=True, nogui=True,  headless_browser=True, mqttClient=client)
 
         
 try:
