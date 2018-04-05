@@ -1204,8 +1204,10 @@ class InstaPy:
         usernames = usernames or []
 
         for index, username in enumerate(usernames):
+            self.followed_by = log_follower_num(self.browser, self.username, self.logfolder, self.client)
+
             try:
-                self.client.publish("instapy/followers", followed_by)  # publish
+                self.client.publish("instapy/followers", self.followed_by)  # publish
             except:
                 print("Server not running")
             self.logger.info(
@@ -1235,7 +1237,7 @@ class InstaPy:
             for i, link in enumerate(links):
                 if i % 4 == 0:     # Every 4 images, show us how many followers you have
                     try:
-                        self.client.publish("instapy/followers", followed_by)  # publish
+                        self.client.publish("instapy/followers", self.followed_by)  # publish
                     except:
                         print("Server not running")
                 # Check if target has reached
