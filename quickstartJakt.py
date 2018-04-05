@@ -31,45 +31,46 @@ client.connect(broker_address)  # connect to broker
 client.loop_start()
 session = InstaPy(username=insta_username, password=insta_password,use_firefox=True, nogui=True, headless_browser=True, mqttClient=client)
 
-        
-try:
-        
-    session.login()
+while true:        
+    try:
+            
+        session.login()
 
-    userList = []
-    userToInteractWithFile = open("interactuserlists.txt", "r")
+        userList = []
+        userToInteractWithFile = open("interactuserlists.txt", "r")
 
-    for line in userToInteractWithFile:
-        userList.append(line.strip())
+        for line in userToInteractWithFile:
+            userList.append(line.strip())
 
 
-    # set up all the setting
-    session.set_do_comment(False, percentage=0)
-    #session.set_use_clarifai(enabled=False)
-    # do the actual liking
-    while True:
-        #strategy 1: Follower liking
-        session.set_do_like(enabled=True, percentage=70)
-        session.set_do_follow(enabled=True, percentage=100)
+        # set up all the setting
+        session.set_do_comment(False, percentage=0)
+        #session.set_use_clarifai(enabled=False)
+        # do the actual liking
+        while True:
+            #strategy 1: Follower liking
+            session.set_do_like(enabled=True, percentage=70)
+            session.set_do_follow(enabled=True, percentage=100)
 
-        session.interact_by_users(userList, amount=40, randomize=True)
-        for j in range(100):
-            session.log_followers()
-            print(j)
-            sleep(36)
+            session.interact_by_users(userList, amount=40, randomize=True)
+            for j in range(100):
+                session.log_followers()
+                print(j)
+                sleep(36)
 
-except Exception as exc:
-    client.publish("instapy/connected", "disconnected")  # publish
-    # if changes to IG layout, upload the file to help us locate the change
-    if isinstance(exc, NoSuchElementException):
-        file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
-        with open(file_path, 'wb') as fp:
-            fp.write(session.browser.page_source.encode('utf8'))
-        print('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
-            '*' * 70, file_path))
-    # full stacktrace when raising Github issue
-    raise
+    except Exception as exc:
+        client.publish("instapy/connected", "disconnected")  # publish
+        # if changes to IG layout, upload the file to help us locate the change
+        if isinstance(exc, NoSuchElementException):
+            file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
+            with open(file_path, 'wb') as fp:
+                fp.write(session.browser.page_source.encode('utf8'))
+            print('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
+                '*' * 70, file_path))
+        # full stacktrace when raising Github issue
+        raise
 
-finally:
-    # end the bot session
-    session.end()
+    finally:
+        # end the bot session
+        session.end()
+        sleep(500)
