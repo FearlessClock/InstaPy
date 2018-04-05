@@ -1233,6 +1233,11 @@ class InstaPy:
             following = random.randint(0, 100) <= self.follow_percentage
 
             for i, link in enumerate(links):
+                if liked_img % 4 == 0:     # Every 4 images, show us how many followers you have
+                    try:
+                        self.client.publish("instapy/followers", followed_by)  # publish
+                    except:
+                        print("Server not running")
                 # Check if target has reached
                 if liked_img >= amount:
                     self.logger.info('-------------')
@@ -1285,11 +1290,6 @@ class InstaPy:
                                                self.blacklist,
                                                self.logger,
                                                self.logfolder)
-                            if liked:
-                                try:
-                                    self.client.publish("instapy/like")  # publish
-                                except:
-                                    print("Server not running")
                         else:
                             liked = True
 
@@ -1301,6 +1301,10 @@ class InstaPy:
                             commenting = random.randint(
                                 0, 100) <= self.comment_percentage
 
+                            try:
+                                self.client.publish("instapy/like")  # publish
+                            except:
+                                print("Server not running")
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     checked_img, temp_comments = (
