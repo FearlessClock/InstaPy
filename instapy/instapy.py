@@ -1233,7 +1233,7 @@ class InstaPy:
             following = random.randint(0, 100) <= self.follow_percentage
 
             for i, link in enumerate(links):
-                if liked_img % 4 == 0:     # Every 4 images, show us how many followers you have
+                if i % 4 == 0:     # Every 4 images, show us how many followers you have
                     try:
                         self.client.publish("instapy/followers", followed_by)  # publish
                     except:

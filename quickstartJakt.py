@@ -29,7 +29,7 @@ broker_address = "localhost"
 client = mqtt.Client("InstaBot")  # create new instance
 client.connect(broker_address)  # connect to broker
 client.loop_start()
-session = InstaPy(username=insta_username, password=insta_password, use_firefox=True, nogui=True,  headless_browser=True, mqttClient=client)
+session = InstaPy(username=insta_username, password=insta_password,use_firefox=True, nogui=True, headless_browser=True, mqttClient=client)
 
         
 try:
@@ -52,12 +52,11 @@ try:
         session.set_do_like(enabled=True, percentage=70)
         session.set_do_follow(enabled=True, percentage=100)
 
-        for i in range(len(userList)):
-            session.interact_by_users(userList, amount=randrange(10, 40), randomize=True)
-            for j in range(100):
-                session.log_followers()
-                print(j)
-                sleep(36)
+        session.interact_by_users(userList, amount=40, randomize=True)
+        for j in range(100):
+            session.log_followers()
+            print(j)
+            sleep(36)
 
 except Exception as exc:
     client.publish("instapy/connected", "disconnected")  # publish
