@@ -1281,6 +1281,11 @@ class InstaPy:
                                                self.blacklist,
                                                self.logger,
                                                self.logfolder)
+                            if liked:
+                                try:
+                                    self.client.publish("instapy/like")  # publish
+                                except:
+                                    print("Server not running")
                         else:
                             liked = True
 
