@@ -1204,6 +1204,10 @@ class InstaPy:
         usernames = usernames or []
 
         for index, username in enumerate(usernames):
+            try:
+                self.client.publish("instapy/followers", followed_by)  # publish
+            except:
+                print("Server not running")
             self.logger.info(
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
