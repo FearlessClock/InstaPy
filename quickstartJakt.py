@@ -9,7 +9,6 @@ from random import randrange
 from time import sleep 
 import paho.mqtt.client as mqtt
 
-
 insta_username = None
 insta_password = None
 usersFile = open("users.txt", "r")
@@ -29,8 +28,11 @@ broker_address = "localhost"
 client = mqtt.Client("InstaBot")  # create new instance
 client.connect(broker_address)  # connect to broker
 client.loop_start()
-session = InstaPy(username=insta_username, password=insta_password,use_firefox=True, nogui=True, headless_browser=True, mqttClient=client)
-
+onServer = False
+if onServer:
+    session = InstaPy(username=insta_username, password=insta_password,use_firefox=True, nogui=True, headless_browser=True, mqttClient=client)
+else:
+    session =  InstaPy(username=insta_username, password=insta_password, mqttClient=client)
 while True:        
     try:
             
@@ -52,7 +54,7 @@ while True:
             session.set_do_like(enabled=True, percentage=70)
             session.set_do_follow(enabled=True, percentage=100)
 
-            session.interact_by_users(userList, amount=40, randomize=True)
+            session.interact_by_users(userList, amount=40, randomize=True)      # Change this to be interact_user_followers so as to interact with users who followed the listed people
             for j in range(100):
                 session.log_followers()
                 print(j)
