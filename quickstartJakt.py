@@ -38,6 +38,8 @@ while True:
     try:
             
         session.login()
+        if session.aborting:
+            raise Exception("Aborting login, probably bad login")
 
         userList = []
         userToInteractWithFile = open("interactuserlists.txt", "r")
@@ -63,6 +65,7 @@ while True:
 
     except Exception as exc:
         client.publish("instapy/connected", "disconnected")  # publish
+        print("Exception caught")
         # if changes to IG layout, upload the file to help us locate the change
         if isinstance(exc, NoSuchElementException):
             file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
@@ -70,10 +73,10 @@ while True:
                 fp.write(session.browser.page_source.encode('utf8'))
             print('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
                 '*' * 70, file_path))
-        # full stacktrace when raising Github issue
-        raise
+            # full stacktrace when raising Github issue
+            raise
 
     finally:
         # end the bot session
         session.end()
-        sleep(500)
+        sleep(5)
