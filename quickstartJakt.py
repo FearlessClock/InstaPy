@@ -29,12 +29,15 @@ client = mqtt.Client("InstaBot")  # create new instance
 client.connect(broker_address)  # connect to broker
 client.loop_start()
 onServer = False
+
+
 while True: 
     if onServer:
         session = InstaPy(username=insta_username, password=insta_password,use_firefox=True, nogui=True, headless_browser=True, mqttClient=client)
     else:
         session =  InstaPy(username=insta_username, password=insta_password, mqttClient=client)
        
+    logger = session.get_instapy_logger(True)
     try:
             
         session.login()
@@ -65,13 +68,13 @@ while True:
 
     except Exception as exc:
         client.publish("instapy/connected", "disconnected")  # publish
-        print("Exception caught")
+        logger.error("Exception caught")
         # if changes to IG layout, upload the file to help us locate the change
         if isinstance(exc, NoSuchElementException):
             file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
             with open(file_path, 'wb') as fp:
                 fp.write(session.browser.page_source.encode('utf8'))
-            print('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
+            logger.error('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
                 '*' * 70, file_path))
             # full stacktrace when raising Github issue
             raise
