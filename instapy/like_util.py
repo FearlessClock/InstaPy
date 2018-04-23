@@ -552,7 +552,7 @@ def check_link(browser, link, dont_like, ignore_if_contains, ignore_users, usern
     return False, user_name, is_video, 'None'
 
 
-def like_image(browser, username, blacklist, logger, logfolder):
+def like_image(browser, username, blacklist, logger, logfolder, mqttclient):
     """Likes the browser opened image"""
     # fetch spans fast
     spans = [x.text.lower() for x in browser.find_elements_by_xpath("//article//a[@role='button']/span")]
@@ -569,6 +569,12 @@ def like_image(browser, username, blacklist, logger, logfolder):
             "//a[@role='button']/span[text()='Unlike']")
         if len(liked_elem) == 1:
             logger.info('--> Image Liked!')
+
+            try:
+                mqttclient.publish("instapy/like")  # publish
+            except:
+                print("Server not running")
+
             update_activity('likes')
             if blacklist['enabled'] is True:
                 action = 'liked'

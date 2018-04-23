@@ -614,7 +614,8 @@ class InstaPy:
                                            user_name,
                                            self.blacklist,
                                            self.logger,
-                                           self.logfolder)
+                                           self.logfolder,
+                                           self.client)
 
                         if liked:
                             liked_img += 1
@@ -905,7 +906,8 @@ class InstaPy:
                                            user_name,
                                            self.blacklist,
                                            self.logger,
-                                           self.logfolder)
+                                           self.logfolder,
+                                           self.client)
 
                         if liked:
 
@@ -929,10 +931,6 @@ class InstaPy:
                                     self.user_interact_media)
 
                             liked_img += 1
-                            try:
-                                self.client.publish("instapy/like")  # publish
-                            except:
-                                print("Server not running")
                             logging.info(liked_img)
                             checked_img = True
                             temp_comments = []
@@ -1113,7 +1111,8 @@ class InstaPy:
                                            user_name,
                                            self.blacklist,
                                            self.logger,
-                                           self.logfolder)
+                                           self.logfolder,
+                                           self.client)
 
                         if liked:
                             total_liked_img += 1
@@ -1291,7 +1290,8 @@ class InstaPy:
                                                user_name,
                                                self.blacklist,
                                                self.logger,
-                                               self.logfolder)
+                                               self.logfolder,
+                                               self.client)
                         else:
                             liked = True
 
@@ -1302,11 +1302,6 @@ class InstaPy:
                             temp_comments = []
                             commenting = random.randint(
                                 0, 100) <= self.comment_percentage
-
-                            try:
-                                self.client.publish("instapy/like")  # publish
-                            except:
-                                print("Server not running")
                             if self.use_clarifai and (following or commenting):
                                 try:
                                     checked_img, temp_comments = (
@@ -1690,7 +1685,8 @@ class InstaPy:
                                                    user_name,
                                                    self.blacklist,
                                                    self.logger,
-                                                   self.logfolder)
+                                                   self.logfolder,
+                                                   self.client)
 
                                 if liked:
                                     username = (self.browser.
