@@ -28,7 +28,7 @@ broker_address = "localhost"
 client = mqtt.Client("InstaBot")  # create new instance
 client.connect(broker_address)  # connect to broker
 client.loop_start()
-onServer = False
+onServer = True
 
 
 while True: 
@@ -82,4 +82,4 @@ while True:
     finally:
         # end the bot session
         session.end()
-        sleep(5)
+        sleep(600)

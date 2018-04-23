@@ -1,0 +1,7 @@
+When changing accounts. There are 3 things to verify
+The account username and password in users.txt
+The taglist in taglists.txt
+The accounts to follow in the interactwithusers.txt
+
+When running on the pi, verify that the startup script is running 
+the correct script
