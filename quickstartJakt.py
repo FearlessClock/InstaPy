@@ -59,9 +59,10 @@ while True:
             #strategy 1: Follower liking
             session.set_do_like(enabled=True, percentage=70)
             session.set_do_follow(enabled=True, percentage=100)
+            session.set_user_interact(amount=10, randomize=True, percentage=100, media='Photo')
 
             for i in range(len(userList)):
-                session.follow_user_followers(userList[i], amount=20, randomize=True)      # Change this to be interact_user_followers so as to interact with users who followed the listed people
+                session.interact_user_followers(userList[i], amount=20, randomize=True)      # Change this to be interact_user_followers so as to interact with users who followed the listed people
                 for j in range(100):
                     if j%10 == 0:
                         session.log_followers()
