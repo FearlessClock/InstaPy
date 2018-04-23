@@ -29,12 +29,11 @@ broker_address = "localhost"
 client = mqtt.Client("InstaBot")  # create new instance
 client.connect(broker_address)  # connect to broker
 client.loop_start()
-session = InstaPy(username=insta_username, password=insta_password, headless_browser=True, mqttClient=client)
+onServer = False
 
         
 try:
-        
-    session.login()
+
     tagFile = open("taglists.txt", "r")
 
     tagsList = []
@@ -48,14 +47,24 @@ try:
         userList.append(line.strip())
 
 
-    # set up all the setting
-    session.set_do_comment(False, percentage=0)
-    #session.set_use_clarifai(enabled=False)
-    # do the actual liking
     while True:
+        if onServer:
+            session = InstaPy(username=insta_username, password=insta_password, use_firefox=True, nogui=True,
+                              headless_browser=True, mqttClient=client)
+        else:
+            session = InstaPy(username=insta_username, password=insta_password, mqttClient=client)
+
+        session.login()
+        # set up all the setting
+        session.set_do_comment(False, percentage=0)
+        # session.set_use_clarifai(enabled=False)
+        # do the actual liking
+
+        logger = session.get_instapy_logger(True)
         #Strategy 1: Hashtab
 
         for i in range(len(tagsList)):
+            logger.info("Starting on tag: " + tagsList[i])
             session.like_by_tags([tagsList[i]], amount=randrange(30, 70))
             for j in range(100):
                 session.log_followers()
@@ -68,6 +77,7 @@ try:
         session.set_do_follow(enabled=True, percentage=100)
 
         for i in range(len(userList)):
+            logger.info("Starting on user: " + userList[i])
             session.interact_user_followers([userList[i]], amount=randrange(10, 40), randomize=True)
             for j in range(100):
                 session.log_followers()
@@ -76,6 +86,7 @@ try:
 
 except Exception as exc:
     client.publish("instapy/connected", "disconnected")  # publish
+    logger.error("Exception caught: ", exc)
     # if changes to IG layout, upload the file to help us locate the change
     if isinstance(exc, NoSuchElementException):
         file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
