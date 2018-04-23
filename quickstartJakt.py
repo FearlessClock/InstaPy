@@ -68,7 +68,7 @@ while True:
 
     except Exception as exc:
         client.publish("instapy/connected", "disconnected")  # publish
-        logger.error("Exception caught")
+        logger.error("Exception caught: ", exc)
         # if changes to IG layout, upload the file to help us locate the change
         if isinstance(exc, NoSuchElementException):
             file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
