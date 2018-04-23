@@ -33,10 +33,10 @@ onServer = False
 
 while True: 
     if onServer:
-        session = InstaPy(username=insta_username, password=insta_password,use_firefox=True, nogui=True, headless_browser=True, mqttClient=client)
+        session = InstaPy(username=insta_username, password=insta_password, use_firefox=True, nogui=True, headless_browser=True, mqttClient=client)
     else:
-        session =  InstaPy(username=insta_username, password=insta_password, mqttClient=client)
-       
+        session = InstaPy(username=insta_username, password=insta_password, mqttClient=client)
+
     logger = session.get_instapy_logger(True)
     try:
             
@@ -60,11 +60,13 @@ while True:
             session.set_do_like(enabled=True, percentage=70)
             session.set_do_follow(enabled=True, percentage=100)
 
-            session.interact_by_users(userList, amount=40, randomize=True)      # Change this to be interact_user_followers so as to interact with users who followed the listed people
-            for j in range(100):
-                session.log_followers()
-                print(j)
-                sleep(36)
+            for i in range(len(userList)):
+                session.follow_user_followers(userList[i], amount=20, randomize=True)      # Change this to be interact_user_followers so as to interact with users who followed the listed people
+                for j in range(100):
+                    if j%10 == 0:
+                        session.log_followers()
+                    print(j)
+                    sleep(36)
 
     except Exception as exc:
         client.publish("instapy/connected", "disconnected")  # publish
