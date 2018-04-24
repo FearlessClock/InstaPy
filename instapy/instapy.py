@@ -82,7 +82,7 @@ class InstaPy:
             self.client.loop_start()
         else:
             self.client = mqttClient
-        self.client.publish("instapy/connected", "connected")  # publish
+        self.client.publish("instapy/connected", username + "is now connected")  # publish
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))
@@ -316,7 +316,7 @@ class InstaPy:
         else:
             self.logger.info('Logged in successfully!')
 
-        self.followed_by = log_follower_num(self.browser, self.username, self.logfolder, self.client)
+        self.followed_by = self.log_followers()
 
         return self
 
@@ -883,7 +883,7 @@ class InstaPy:
             except NoSuchElementException:
                 self.logger.error('Too few images, skipping this tag')
                 continue
-            log_follower_num(self.browser, self.username, self.logfolder, self.client)
+            self.log_followers()
             for i, link in enumerate(links):
                 self.logger.info('[{}/{}]'.format(i + 1, len(links)))
                 self.logger.info(link)
@@ -1069,7 +1069,7 @@ class InstaPy:
                                         self.logger,
                                         self.logfolder)
                 try:
-                    self.client.publish("instapy/follow")
+                    self.client.publish("instapy/follow", self.username + "is now following a user")
                 except:
                     print("Server not running")
             else:
@@ -1203,12 +1203,8 @@ class InstaPy:
         usernames = usernames or []
 
         for index, username in enumerate(usernames):
-            self.followed_by = log_follower_num(self.browser, self.username, self.logfolder, self.client)
+            self.followed_by = self.log_followers()
 
-            try:
-                self.client.publish("instapy/followers", self.followed_by)  # publish
-            except:
-                print("Server not running")
             self.logger.info(
                 'Username [{}/{}]'.format(index + 1, len(usernames)))
             self.logger.info('--> {}'.format(username.encode('utf-8')))
@@ -1235,10 +1231,7 @@ class InstaPy:
 
             for i, link in enumerate(links):
                 if i % 4 == 0:     # Every 4 images, show us how many followers you have
-                    try:
-                        self.client.publish("instapy/followers", self.followed_by)  # publish
-                    except:
-                        print("Server not running")
+                    self.log_followers()
                 # Check if target has reached
                 if liked_img >= amount:
                     self.logger.info('-------------')
@@ -1841,7 +1834,7 @@ class InstaPy:
             self.logger.info('Campaign {} first run'.format(campaign))
 
     def log_followers(self):
-        log_follower_num(self.browser, self.username, self.logfolder, self.client)
+        return log_follower_num(self.browser, self.username, self.logfolder, self.client)
 
     def end(self):
         """Closes the current session"""

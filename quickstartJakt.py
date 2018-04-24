@@ -45,7 +45,7 @@ while True:
             raise Exception("Aborting login, probably bad login")
 
         userList = []
-        userToInteractWithFile = open("interactuserlists.txt", "r")
+        userToInteractWithFile = open("interactuserlists0.txt", "r")
 
         for line in userToInteractWithFile:
             userList.append(line.strip())
@@ -62,7 +62,7 @@ while True:
             session.set_user_interact(amount=10, randomize=True, percentage=100, media='Photo')
 
             for i in range(len(userList)):
-                session.interact_user_followers(userList[i], amount=20, randomize=True)      # Change this to be interact_user_followers so as to interact with users who followed the listed people
+                session.interact_user_followers(userList[i], amount=10, randomize=True)      # Change this to be interact_user_followers so as to interact with users who followed the listed people
                 for j in range(100):
                     if j%10 == 0:
                         session.log_followers()
@@ -70,7 +70,7 @@ while True:
                     sleep(36)
 
     except Exception as exc:
-        client.publish("instapy/connected", "disconnected")  # publish
+        client.publish("instapy/connected", insta_username + " is disconnected")  # publish
         logger.error("Exception caught: ", exc)
         # if changes to IG layout, upload the file to help us locate the change
         if isinstance(exc, NoSuchElementException):

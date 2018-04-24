@@ -571,7 +571,7 @@ def like_image(browser, username, blacklist, logger, logfolder, mqttclient):
             logger.info('--> Image Liked!')
 
             try:
-                mqttclient.publish("instapy/like")  # publish
+                mqttclient.publish("instapy/like", username + " liked an image!")  # publish
             except:
                 print("Server not running")
 

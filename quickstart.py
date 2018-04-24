@@ -32,14 +32,14 @@ onServer = False
 
 try:
 
-    tagFile = open("taglists.txt", "r")
+    tagFile = open("taglists0.txt", "r")
 
     tagsList = []
     for line in tagFile:
         tagsList.append(line.strip())
 
     userList = []
-    userToInteractWithFile = open("interactuserlists.txt", "r")
+    userToInteractWithFile = open("interactuserlists0.txt", "r")
 
     for line in userToInteractWithFile:
         userList.append(line.strip())
@@ -85,7 +85,7 @@ try:
                 sleep(36)
 
 except Exception as exc:
-    client.publish("instapy/connected", "disconnected")  # publish
+    client.publish("instapy/connected", insta_username + " is disconnected")  # publish
     logger.error("Exception caught: ", exc)
     # if changes to IG layout, upload the file to help us locate the change
     if isinstance(exc, NoSuchElementException):
