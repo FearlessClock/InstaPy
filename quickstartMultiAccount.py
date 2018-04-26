@@ -17,8 +17,8 @@ usersFile = open("users.txt", "r")
 
 information = usersFile.readline().split(",")
 while len(information) > 1:
-    insta_usernames.append(information[0].lstrip())
-    insta_passwords.append(information[1].lstrip())
+    insta_usernames.append(information[0].strip())
+    insta_passwords.append(information[1].strip())
     information = usersFile.readline().split(",")
 
 # set headless_browser=True if you want to run InstaPy on a server
@@ -54,8 +54,7 @@ def worker(username, password, index):
 
         while True:
             if onServer:
-                session = InstaPy(username=username, password=password, use_firefox=True, nogui=True,
-                                  headless_browser=True, mqttClient=client, multi_logs=True)
+                session = InstaPy(username=username, password=password, use_firefox=True, nogui=True, headless_browser=True, mqttClient=client, multi_logs=True)
             else:
                 session = InstaPy(username=username, password=password, mqttClient=client)
 

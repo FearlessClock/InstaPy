@@ -15,8 +15,8 @@ usersFile = open("users.txt", "r")
 
 information = usersFile.readline().split(",")
 if len(information) > 1:
-    insta_username = information[0]
-    insta_password = information[1]
+    insta_username = information[0].strip()
+    insta_password = information[1].strip()
     
 # set headless_browser=True if you want to run InstaPy on a server
 
