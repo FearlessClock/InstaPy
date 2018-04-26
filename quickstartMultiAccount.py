@@ -27,13 +27,16 @@ while len(information) > 1:
 # library in the /usr/lib/pythonX.X/ directory:
 #   Settings.database_location = '/path/to/instapy.db'
 #   Settings.chromedriver_location = '/path/to/chromedriver'
-broker_address = "localhost"
-client = mqtt.Client("InstaBot")  # create new instance
-client.connect(broker_address)  # connect to broker
-client.loop_start()
 onServer = False
 
 def worker(username, password, index):
+    broker_address = "localhost"
+    client = mqtt.Client(username)  # create new instance
+    client.connect(broker_address)  # connect to broker
+    client.loop_start()
+
+    client.publish("instapy/connected", username + " is connected")  # publish
+
     try:
 
         print("MULTI - Started as", username, "at", datetime.datetime.now().strftime("%H:%M:%S"))
@@ -111,7 +114,6 @@ if __name__ == '__main__':
     print("MULTI -","Starting at",datetime.datetime.now().strftime("%H:%M:%S"))
     jobs = []
     for i in range(len(insta_usernames)):
-        print(insta_passwords)
         p = multiprocessing.Process(target=worker, args=(insta_usernames[i], insta_passwords[i], i,))
         jobs.append(p)
         p.start()

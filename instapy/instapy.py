@@ -82,7 +82,7 @@ class InstaPy:
             self.client.loop_start()
         else:
             self.client = mqttClient
-        self.client.publish("instapy/connected", username + "is now connected")  # publish
+        self.client.publish("instapy/connected", username + " is now connected")  # publish
 
         if nogui:
             self.display = Display(visible=0, size=(800, 600))

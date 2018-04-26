@@ -13,7 +13,7 @@ insta_username = None
 insta_password = None
 usersFile = open("users.txt", "r")
 
-information = usersFile.read().split(",")
+information = usersFile.readline().split(",")
 if len(information) > 1:
     insta_username = information[0]
     insta_password = information[1]

@@ -151,9 +151,9 @@ def login_user(browser,
     ActionChains(browser).move_to_element(input_password[0]). \
         click().send_keys(password).perform()
 
-    #login_button = browser.find_element_by_xpath(
-    #    "//form/span/button[text()='Log in']")
-    #ActionChains(browser).move_to_element(login_button).click().perform()
+    login_button = browser.find_element_by_xpath(
+        "//form/span/button[text()='Log in']")
+    ActionChains(browser).move_to_element(login_button).click().perform()
     # update server calls
     update_activity()
 
