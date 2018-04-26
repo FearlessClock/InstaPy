@@ -13,7 +13,7 @@ def log_follower_num(browser, username, logfolder, client=None):
         "graphql.user.edge_followed_by.count")
 
     if client is not None:
-        client.publish("instapy/followers", username + "has " + str(followed_by) + " followers")  # publish
+        client.publish("instapy/followers", username + " has " + str(followed_by) + " followers")  # publish
 
     with open('{}followerNum.txt'.format(logfolder), 'a') as numFile:
         numFile.write(

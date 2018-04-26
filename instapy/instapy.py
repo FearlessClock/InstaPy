@@ -903,7 +903,7 @@ class InstaPy:
 
                     if not inappropriate:
                         liked = like_image(self.browser,
-                                           user_name,
+                                           self.username,
                                            self.blacklist,
                                            self.logger,
                                            self.logfolder,
@@ -1108,7 +1108,7 @@ class InstaPy:
 
                     if not inappropriate:
                         liked = like_image(self.browser,
-                                           user_name,
+                                           self.username,
                                            self.blacklist,
                                            self.logger,
                                            self.logfolder,
@@ -1280,7 +1280,7 @@ class InstaPy:
                         liking = random.randint(0, 100) <= self.like_percentage
                         if self.do_like and liking:
                             liked = like_image(self.browser,
-                                               user_name,
+                                               self.username,
                                                self.blacklist,
                                                self.logger,
                                                self.logfolder,
