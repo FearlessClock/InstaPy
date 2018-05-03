@@ -37,22 +37,22 @@ def worker(username, password, index):
 
     client.publish("instapy/connected", username + " is connected")  # publish
 
-    try:
 
-        print("MULTI - Started as", username, "at", datetime.datetime.now().strftime("%H:%M:%S"))
-        tagFile = open("taglists"+str(index)+".txt", "r")
+    print("MULTI - Started as", username, "at", datetime.datetime.now().strftime("%H:%M:%S"))
+    tagFile = open("taglists"+str(index)+".txt", "r")
 
-        tagsList = []
-        for line in tagFile:
-            tagsList.append(line.strip())
+    tagsList = []
+    for line in tagFile:
+        tagsList.append(line.strip())
 
-        userList = []
-        userToInteractWithFile = open("interactuserlists"+str(index)+".txt", "r")
+    userList = []
+    userToInteractWithFile = open("interactuserlists"+str(index)+".txt", "r")
 
-        for line in userToInteractWithFile:
-            userList.append(line.strip())
+    for line in userToInteractWithFile:
+        userList.append(line.strip())
 
-        while True:
+    while True:
+        try:
             if onServer:
                 session = InstaPy(username=username, password=password, use_firefox=True, nogui=True, headless_browser=True, mqttClient=client, multi_logs=True)
             else:
@@ -91,23 +91,23 @@ def worker(username, password, index):
                         print(j)
                         sleep(36)
 
-    except Exception as exc:
-        client.publish("instapy/connected", username + " is disconnected")  # publish
-        logger.error("Something went wrong with " + username);
-        logger.error("Exception caught: ", exc)
-        # if changes to IG layout, upload the file to help us locate the change
-        if isinstance(exc, NoSuchElementException):
-            file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
-            with open(file_path, 'wb') as fp:
-                fp.write(session.browser.page_source.encode('utf8'))
-            print('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
-                '*' * 70, file_path))
-        # full stacktrace when raising Github issue
-        raise
+        except Exception as exc:
+            client.publish("instapy/connected", username + " is disconnected")  # publish
+            logger.error("Something went wrong with " + username);
+            logger.error("Exception caught: ", exc)
+            # if changes to IG layout, upload the file to help us locate the change
+            if isinstance(exc, NoSuchElementException):
+                file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
+                with open(file_path, 'wb') as fp:
+                    fp.write(session.browser.page_source.encode('utf8'))
+                print('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
+                    '*' * 70, file_path))
+            # full stacktrace when raising Github issue
+            raise
 
-    finally:
-        # end the bot session
-        session.end()
+        finally:
+            # end the bot session
+            session.end()
 
 if __name__ == '__main__':
     print("MULTI -","Starting at",datetime.datetime.now().strftime("%H:%M:%S"))
