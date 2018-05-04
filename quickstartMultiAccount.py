@@ -102,12 +102,11 @@ def worker(username, password, index):
                     fp.write(session.browser.page_source.encode('utf8'))
                 print('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
                     '*' * 70, file_path))
-            # full stacktrace when raising Github issue
-            raise
 
         finally:
             # end the bot session
             session.end()
+            sleep(320)
 
 if __name__ == '__main__':
     print("MULTI -","Starting at",datetime.datetime.now().strftime("%H:%M:%S"))
