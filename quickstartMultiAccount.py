@@ -93,11 +93,11 @@ def worker(username, password, index):
 
         except Exception as exc:
             client.publish("instapy/connected", username + " is disconnected")  # publish
-            logger.error("Something went wrong with " + username);
-            logger.error("Exception caught: ", exc)
+            logger.error("Something really went wrong with " + username);
             # if changes to IG layout, upload the file to help us locate the change
             if isinstance(exc, NoSuchElementException):
                 file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))
+                logger.error(file_path)
                 with open(file_path, 'wb') as fp:
                     fp.write(session.browser.page_source.encode('utf8'))
                 print('{0}\nIf raising an issue, please also upload the file located at:\n{1}\n{0}'.format(
