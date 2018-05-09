@@ -59,7 +59,18 @@ try:
         # session.set_use_clarifai(enabled=False)
         # do the actual liking
 
-        # Strategy 1: Hashtab
+        # settings
+        session.set_relationship_bounds(enabled=True,
+                     potency_ratio=None,
+                      delimit_by_numbers=True,
+                       max_followers=90000,
+                        max_following=90000,
+                         min_followers=45,
+                          min_following=77)
+        session.set_do_comment(True, percentage=10)
+        session.set_comments(['aMEIzing!', 'So much fun!!', 'Nicey!'])
+        session.set_dont_include(['friend1', 'friend2', 'friend3'])
+        session.set_dont_like(['pizza', 'girl'])
 
         for i in range(len(tagsList)):
             logger.info("Starting on tag: " + tagsList[i])
@@ -85,8 +96,11 @@ try:
                 sleep(36)
 
 except Exception as exc:
-    client.publish("instapy/connected", insta_username + " is disconnected")  # publish
-    logger.error("Exception caught: ", exc)
+    try:
+        client.publish("instapy/connected", insta_username + " is disconnected")  # publish
+        logger.error("Exception caught: ", exc)
+    except:
+        print("Client or logger not initialized")
     # if changes to IG layout, upload the file to help us locate the change
     if isinstance(exc, NoSuchElementException):
         file_path = os.path.join(gettempdir(), '{}.html'.format(time.strftime('%Y%m%d-%H%M%S')))

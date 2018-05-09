@@ -12,6 +12,7 @@ from .util import click_element
 from .print_log_writer import log_followed_pool
 from .print_log_writer import log_uncertain_unfollowed_pool
 from .print_log_writer import log_record_all_unfollowed
+from selenium.common.exceptions import WebDriverException
 from selenium.common.exceptions import NoSuchElementException
 import random
 import os
@@ -109,7 +110,7 @@ def unfollow(browser,
                                        .format(int(sleep_delay/60)))
                         sleep(sleep_delay)
                         hasSlept = True
-                        continue
+                        pass
 
                 if person not in dont_include:
                     browser.get('https://www.instagram.com/' + person)
@@ -186,26 +187,23 @@ def unfollow(browser,
 
     elif onlyInstapyFollowed is False and onlyNotFollowMe is True:
         # unfollow only not follow me
-        try:
-            browser.get(
-                'https://www.instagram.com/' + username + '/?__a=1')
-            pre = browser.find_element_by_tag_name("pre").text
-            user_data = json.loads(pre)['graphql']['user']
-        except BaseException as e:
-            print("unable to get user information\n", str(e))
+        user_data = {}
 
         graphql_endpoint = 'https://www.instagram.com/graphql/query/'
         graphql_followers = (
-            graphql_endpoint + '?query_id=17851374694183129')
+                graphql_endpoint + '?query_hash=37479f2b8209594dde7facb0d904896a')
         graphql_following = (
-            graphql_endpoint + '?query_id=17874545323001329')
+                graphql_endpoint + '?query_hash=58712303d941c6855d4e888c5f0cd22f')
 
         all_followers = []
         all_following = []
 
         variables = {}
+        user_data['id'] = browser.execute_script(
+            "return window._sharedData.entry_data.ProfilePage[0]."
+            "graphql.user.id")
         variables['id'] = user_data['id']
-        variables['first'] = 100
+        variables['first'] = 50
 
         # get follower and following user loop
         try:
@@ -315,7 +313,7 @@ def unfollow(browser,
         try:
             following_link = browser.find_elements_by_xpath(
                 '//article//ul//li[3]')
-            
+
             click_element(browser, following_link[0]) # following_link[0].click()
             # update server calls
             update_activity()
@@ -360,7 +358,7 @@ def unfollow(browser,
                                     .format(int(sleep_delay/60)))
                         sleep(sleep_delay)
                         hasSlept = True
-                        continue
+                        pass
 
                 if person not in dont_include:
                     unfollowNum += 1
@@ -391,9 +389,6 @@ def follow_user(browser, follow_restrict, login, user_name, blacklist, logger, l
     try:
         follow_button = browser.find_element_by_xpath(
                 "//button[text()='Follow']")
-
-        # Do we still need this sleep?
-        sleep(2)
 
         if follow_button.is_displayed():
             click_element(browser, follow_button) # follow_button.click()
@@ -432,7 +427,7 @@ def unfollow_user(browser, logger):
 
     if unfollow_button.text == 'Following':
         click_element(browser, unfollow_button) # unfollow_button.send_keys("\n")
-        
+
         update_activity('unfollows')
         logger.warning('--> User unfollowed due to Inappropriate Content')
         sleep(3)
@@ -635,6 +630,7 @@ def get_given_user_followers(browser, user_name, amount, dont_include, login, ra
         list of followers links
         None on error
     """
+    user_name = user_name.strip()
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
@@ -706,6 +702,7 @@ def get_given_user_following(browser,
                              login,
                              randomize,
                              logger):
+    user_name = user_name.strip()
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
@@ -784,6 +781,8 @@ def follow_given_user_followers(browser, user_name, amount, dont_include, login,
     :param follow_times:
     :return: list of user's followers also followed
     """
+    user_name = user_name.strip()
+
     browser.get('https://www.instagram.com/{}'.format(user_name))
     update_activity()
 
@@ -834,6 +833,7 @@ def follow_given_user_following(browser,
                                 logger,
                                 logfolder,
                                 follow_times):
+    user_name = user_name.strip()
 
     browser.get('https://www.instagram.com/' + user_name)
     # update server calls
@@ -893,3 +893,59 @@ def load_follow_restriction(logfolder):
 
     with open(filename) as followResFile:
         return json.load(followResFile)
+
+
+def get_relationship_counts(browser, username, logger):
+    """ Gets the followers & following counts of a given user """
+    userlink = 'https://www.instagram.com/' + username
+    browser.get(userlink)
+
+    # update server calls
+    update_activity()
+    sleep(1)
+
+    try:
+        followers_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                "(@href,'followers')]/span").text)
+    except NoSuchElementException:
+        try:
+            followers_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_followed_by.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                followers_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_followed_by.count")
+            except WebDriverException:
+                try:
+                    followers_count = format_number(browser.find_element_by_xpath(
+                                    "//li[2]/a/span[contains(@class, '_fd86t')]").text)
+                except NoSuchElementException:
+                    logger.info("Error occured during getting the followers count of '{}'\n".format(username))
+                    followers_count = None
+
+    try:
+        following_count = format_number(browser.find_element_by_xpath("//a[contains"
+                                "(@href,'following')]/span").text)
+    except NoSuchElementException:
+        try:
+            following_count = browser.execute_script(
+                "return window._sharedData.entry_data."
+                "ProfilePage[0].graphql.user.edge_follow.count")
+        except WebDriverException:
+            try:
+                browser.execute_script("location.reload()")
+                following_count = browser.execute_script(
+                    "return window._sharedData.entry_data."
+                    "ProfilePage[0].graphql.user.edge_follow.count")
+            except WebDriverException:
+                try:
+                    following_count = format_number(browser.find_element_by_xpath(
+                                        "//li[3]/a/span[contains(@class, '_fd86t')]").text)
+                except NoSuchElementException:
+                    logger.info("\nError occured during getting the following count of '{}'\n".format(username))
+                    following_count = None
+    
+    return followers_count, following_count
