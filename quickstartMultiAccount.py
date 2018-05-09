@@ -30,12 +30,16 @@ while len(information) > 1:
 onServer = False
 
 def worker(username, password, index):
-    broker_address = "localhost"
-    client = mqtt.Client(username)  # create new instance
-    client.connect(broker_address)  # connect to broker
-    client.loop_start()
-
-    client.publish("instapy/connected", username + " is connected")  # publish
+    try:
+        broker_address = "localhost"
+        client = None
+        client = mqtt.Client(username)  # create new instance
+        client.connect(broker_address)  # connect to broker
+        client.loop_start()
+    except ConnectionRefusedError:
+        print("No existing mqtt client running on the device")
+    if client is not None:
+        client.publish("instapy/connected", username + " is connected")  # publish
 
 
     print("MULTI - Started as", username, "at", datetime.datetime.now().strftime("%H:%M:%S"))
@@ -57,7 +61,13 @@ def worker(username, password, index):
                 session = InstaPy(username=username, password=password, use_firefox=True, nogui=True, headless_browser=True, mqttClient=client, multi_logs=True)
             else:
                 session = InstaPy(username=username, password=password, mqttClient=client)
-
+            session.set_relationship_bounds(enabled=True,
+                                            potency_ratio=None,
+                                            delimit_by_numbers=True,
+                                            max_followers=900000,
+                                            max_following=900000,
+                                            min_followers=45,
+                                            min_following=77)
             logger = session.get_instapy_logger(True)
             logger.info("Logging in!")
             session.login()
